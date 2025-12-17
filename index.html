@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rujo Coffee House | Private Concierge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cream: #F3ECE2;
+      --green: #22392f;
+      --gold: #C89B3C;
+      --gold-light: rgba(200, 155, 60, 0.15);
+      --text-dark: #1a1a1a;
+      --text-muted: #6b6b6b;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--green);
+      color: var(--cream);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .progress-text {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cream);
+      opacity: 0.6;
+    }
+
+    .progress-bar {
+      width: 120px;
+      height: 2px;
+      background: rgba(243, 236, 226, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0%;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .questions-wrapper {
+      width: 100%;
+      max-width: 700px;
+      position: relative;
+    }
+
+    .question-slide {
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(40px);
+      pointer-events: none;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .question-slide.active {
+      position: relative;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    .question-slide.exit-up {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+
+    .question-number {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .question-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+      color: var(--cream);
+    }
+
+    .question-subtitle {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--cream);
+      opacity: 0.7;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    /* Options Grid */
+    .options-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .options-grid.two-col {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px) {
+      .options-grid.two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option {
+      position: relative;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid rgba(243, 236, 226, 0.2);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .option:hover {
+      border-color: var(--gold);
+      background: rgba(200, 155, 60, 0.05);
+    }
+
+    .option.selected {
+      border-color: var(--gold);
+      background: rgba(200, 155, 60, 0.1);
+    }
+
+    .option-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(243, 236, 226, 0.4);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      margin-top: 2px;
+    }
+
+    .option.selected .option-checkbox {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .option-checkbox svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--green);
+      stroke-width: 3;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s ease;
+    }
+
+    .option.selected .option-checkbox svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .option-radio {
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(243, 236, 226, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      margin-top: 2px;
+    }
+
+    .option.selected .option-radio {
+      border-color: var(--gold);
+    }
+
+    .option-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.2s ease;
+    }
+
+    .option.selected .option-radio::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .option-content {
+      flex: 1;
+    }
+
+    .option-label {
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 0.25rem;
+      color: var(--cream);
+    }
+
+    .option-description {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--cream);
+      opacity: 0.6;
+      line-height: 1.5;
+    }
+
+    .option-key {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid rgba(243, 236, 226, 0.2);
+      border-radius: 3px;
+      color: var(--cream);
+      opacity: 0.4;
+      font-weight: 500;
+    }
+
+    /* Text Input */
+    .text-input-group {
+      margin-bottom: 1rem;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 1rem 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 300;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(243, 236, 226, 0.3);
+      color: var(--cream);
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .text-input::placeholder {
+      color: rgba(243, 236, 226, 0.4);
+    }
+
+    .text-input:focus {
+      border-color: var(--gold);
+    }
+
+    .text-input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .text-input-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+
+    textarea.text-input {
+      resize: none;
+      min-height: 100px;
+      border: 1px solid rgba(243, 236, 226, 0.3);
+      border-radius: 4px;
+      padding: 1rem;
+    }
+
+    textarea.text-input:focus {
+      border-color: var(--gold);
+    }
+
+    /* Navigation */
+    .nav-footer {
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      padding: 1rem 2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: none;
+      color: var(--cream);
+      opacity: 0.6;
+      padding-left: 0;
+    }
+
+    .btn-back:hover {
+      opacity: 1;
+    }
+
+    .btn-back svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-next {
+      background: var(--gold);
+      border: none;
+      color: var(--green);
+      margin-left: auto;
+    }
+
+    .btn-next:hover {
+      background: #d4a94a;
+      transform: translateY(-1px);
+    }
+
+    .btn-next:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-next svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-submit {
+      background: var(--gold);
+      border: none;
+      color: var(--green);
+      font-size: 1rem;
+      padding: 1.25rem 3rem;
+    }
+
+    .btn-submit:hover {
+      background: #d4a94a;
+    }
+
+    /* Welcome Screen */
+    .welcome-content {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .welcome-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 0.5rem 1.5rem;
+      border-radius: 2px;
+      margin-bottom: 2rem;
+    }
+
+    .welcome-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .welcome-description {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.8;
+      opacity: 0.8;
+      margin-bottom: 3rem;
+    }
+
+    .welcome-start {
+      background: var(--gold);
+      border: none;
+      color: var(--green);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      padding: 1.25rem 3rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .welcome-start:hover {
+      background: #d4a94a;
+      transform: translateY(-2px);
+    }
+
+    /* Confirmation Screen */
+    .confirmation-content {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .confirmation-icon {
+      width: 80px;
+      height: 80px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+    }
+
+    .confirmation-icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: var(--gold);
+    }
+
+    .confirmation-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      margin-bottom: 1rem;
+    }
+
+    .confirmation-message {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.8;
+      opacity: 0.8;
+      margin-bottom: 2rem;
+    }
+
+    .confirmation-details {
+      text-align: left;
+      background: rgba(243, 236, 226, 0.05);
+      border: 1px solid rgba(243, 236, 226, 0.1);
+      border-radius: 4px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .confirmation-details h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(243, 236, 226, 0.1);
+      font-size: 0.9rem;
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      opacity: 0.6;
+    }
+
+    .summary-value {
+      font-weight: 400;
+      text-align: right;
+      max-width: 60%;
+    }
+
+    /* Keyboard hints */
+    .keyboard-hint {
+      font-size: 0.75rem;
+      color: var(--cream);
+      opacity: 0.4;
+      margin-top: 2rem;
+    }
+
+    .keyboard-hint kbd {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid rgba(243, 236, 226, 0.3);
+      border-radius: 3px;
+      margin: 0 0.25rem;
+      font-family: inherit;
+    }
+
+    /* Decorative elements */
+    .decorative-line {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">RUJO</div>
+      <div class="progress-container">
+        <span class="progress-text" id="progressText">0 / 7</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="questions-wrapper">
+        
+        <!-- Welcome Screen -->
+        <div class="question-slide active" data-step="0">
+          <div class="welcome-content">
+            <span class="welcome-badge">Private Collection</span>
+            <h1 class="welcome-title">Concierge Experience</h1>
+            <div class="decorative-line"></div>
+            <p class="welcome-description">
+              Welcome to Rujo's exclusive concierge service. We curate the world's rarest coffees for discerning palates. Allow us to craft your perfect selection.
+            </p>
+            <button class="welcome-start" onclick="nextQuestion()">Begin Your Journey</button>
+          </div>
+        </div>
+
+        <!-- Question 1: Coffee Selection -->
+        <div class="question-slide" data-step="1">
+          <span class="question-number">Question 01</span>
+          <h2 class="question-title">Which rare origins call to you?</h2>
+          <p class="question-subtitle">Select all that intrigue your palate. Each represents the pinnacle of its terroir.</p>
+          
+          <div class="options-grid two-col" data-type="checkbox" data-name="coffees">
+            <div class="option" data-value="kopi-luwak">
+              <div class="option-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="option-content">
+                <div class="option-label">Kopi Luwak</div>
+                <div class="option-description">Indonesian • Wild civet processed • Earthy, smooth, chocolate undertones</div>
+              </div>
+              <span class="option-key">A</span>
+            </div>
+            
+            <div class="option" data-value="wush-wush">
+              <div class="option-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="option-content">
+                <div class="option-label">Wush Wush</div>
+                <div class="option-description">Ethiopian • Heirloom varietal • Floral, tea-like, bergamot notes</div>
+              </div>
+              <span class="option-key">B</span>
+            </div>
+            
+            <div class="option" data-value="sudan-rume">
+              <div class="option-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="option-content">
+                <div class="option-label">Sudan Rume</div>
+                <div class="option-description">South Sudan origin • Complex sweetness • Stone fruit, honey, wine</div>
+              </div>
+              <span class="option-key">C</span>
+            </div>
+            
+            <div class="option" data-value="gesha">
+              <div class="option-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="option-content">
+                <div class="option-label">Gesha</div>
+                <div class="option-description">Panama • Competition winner • Jasmine, tropical fruit, silky body</div>
+              </div>
+              <span class="option-key">D</span>
+            </div>
+          </div>
+          
+          <p class="keyboard-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to select • <kbd>Enter</kbd> to continue</p>
+        </div>
+
+        <!-- Question 2: Grind Preference -->
+        <div class="question-slide" data-step="2">
+          <span class="question-number">Question 02</span>
+          <h2 class="question-title">How shall we prepare your beans?</h2>
+          <p class="question-subtitle">Select your preferred preparation for the ultimate brewing experience.</p>
+          
+          <div class="options-grid" data-type="radio" data-name="grind">
+            <div class="option" data-value="whole-bean">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Whole Bean</div>
+                <div class="option-description">Maximum freshness • Grind moments before brewing</div>
+              </div>
+              <span class="option-key">A</span>
+            </div>
+            
+            <div class="option" data-value="drip">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Drip / Pour Over</div>
+                <div class="option-description">Medium grind • Ideal for Chemex, V60, drip machines</div>
+              </div>
+              <span class="option-key">B</span>
+            </div>
+            
+            <div class="option" data-value="coarse">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Coarse</div>
+                <div class="option-description">French press, cold brew • Extended extraction</div>
+              </div>
+              <span class="option-key">C</span>
+            </div>
+            
+            <div class="option" data-value="fine">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Fine / Espresso</div>
+                <div class="option-description">Espresso machines, Moka pot, AeroPress</div>
+              </div>
+              <span class="option-key">D</span>
+            </div>
+            
+            <div class="option" data-value="single-serve">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Single Serve Cups</div>
+                <div class="option-description">Premium convenience • Compatible with Keurig systems</div>
+              </div>
+              <span class="option-key">E</span>
+            </div>
+          </div>
+          
+          <p class="keyboard-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> <kbd>E</kbd> to select • <kbd>Enter</kbd> to continue</p>
+        </div>
+
+        <!-- Question 3: Roast Preference -->
+        <div class="question-slide" data-step="3">
+          <span class="question-number">Question 03</span>
+          <h2 class="question-title">What roast profile speaks to you?</h2>
+          <p class="question-subtitle">Each level reveals different dimensions of our rare coffees.</p>
+          
+          <div class="options-grid" data-type="radio" data-name="roast">
+            <div class="option" data-value="light">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Light Roast</div>
+                <div class="option-description">Bright acidity • Origin-forward • Delicate floral and fruit notes</div>
+              </div>
+              <span class="option-key">A</span>
+            </div>
+            
+            <div class="option" data-value="medium">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Medium Roast</div>
+                <div class="option-description">Balanced • Caramel sweetness • Origin meets roast character</div>
+              </div>
+              <span class="option-key">B</span>
+            </div>
+            
+            <div class="option" data-value="medium-dark">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Medium-Dark</div>
+                <div class="option-description">Rich body • Chocolate notes • Subtle smokiness emerges</div>
+              </div>
+              <span class="option-key">C</span>
+            </div>
+            
+            <div class="option" data-value="dark">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Dark Roast</div>
+                <div class="option-description">Bold intensity • Deep caramelization • Smoky, bittersweet finish</div>
+              </div>
+              <span class="option-key">D</span>
+            </div>
+          </div>
+          
+          <p class="keyboard-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to select • <kbd>Enter</kbd> to continue</p>
+        </div>
+
+        <!-- Question 4: Frequency -->
+        <div class="question-slide" data-step="4">
+          <span class="question-number">Question 04</span>
+          <h2 class="question-title">How often shall we deliver?</h2>
+          <p class="question-subtitle">We'll ensure your collection never runs dry.</p>
+          
+          <div class="options-grid two-col" data-type="radio" data-name="frequency">
+            <div class="option" data-value="weekly">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Weekly</div>
+                <div class="option-description">For the devoted connoisseur</div>
+              </div>
+              <span class="option-key">A</span>
+            </div>
+            
+            <div class="option" data-value="biweekly">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Every Two Weeks</div>
+                <div class="option-description">Perfect balance of freshness</div>
+              </div>
+              <span class="option-key">B</span>
+            </div>
+            
+            <div class="option" data-value="monthly">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">Monthly</div>
+                <div class="option-description">Curated monthly experience</div>
+              </div>
+              <span class="option-key">C</span>
+            </div>
+            
+            <div class="option" data-value="one-time">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">One-Time Order</div>
+                <div class="option-description">Single curated shipment</div>
+              </div>
+              <span class="option-key">D</span>
+            </div>
+          </div>
+          
+          <p class="keyboard-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to select • <kbd>Enter</kbd> to continue</p>
+        </div>
+
+        <!-- Question 5: Quantity -->
+        <div class="question-slide" data-step="5">
+          <span class="question-number">Question 05</span>
+          <h2 class="question-title">What quantity per delivery?</h2>
+          <p class="question-subtitle">Select the amount that suits your household or office.</p>
+          
+          <div class="options-grid two-col" data-type="radio" data-name="quantity">
+            <div class="option" data-value="8oz">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">8 oz (Half Pound)</div>
+                <div class="option-description">~20 cups • Intimate tasting</div>
+              </div>
+              <span class="option-key">A</span>
+            </div>
+            
+            <div class="option" data-value="16oz">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">16 oz (One Pound)</div>
+                <div class="option-description">~40 cups • Personal favorite</div>
+              </div>
+              <span class="option-key">B</span>
+            </div>
+            
+            <div class="option" data-value="32oz">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">2 lbs</div>
+                <div class="option-description">~80 cups • Household supply</div>
+              </div>
+              <span class="option-key">C</span>
+            </div>
+            
+            <div class="option" data-value="5lb">
+              <div class="option-radio"></div>
+              <div class="option-content">
+                <div class="option-label">5 lbs</div>
+                <div class="option-description">~200 cups • Office or entertaining</div>
+              </div>
+              <span class="option-key">D</span>
+            </div>
+          </div>
+          
+          <p class="keyboard-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to select • <kbd>Enter</kbd> to continue</p>
+        </div>
+
+        <!-- Question 6: Special Requests -->
+        <div class="question-slide" data-step="6">
+          <span class="question-number">Question 06</span>
+          <h2 class="question-title">Any special requests?</h2>
+          <p class="question-subtitle">Tell us about your preferences, gifting needs, or brewing rituals.</p>
+          
+          <div class="text-input-group">
+            <textarea class="text-input" id="specialRequests" placeholder="E.g., I prefer low-acidity coffees, this is a gift, I'd like tasting notes included..." rows="4"></textarea>
+          </div>
+          
+          <p class="keyboard-hint">Press <kbd>Enter</kbd> to continue (optional)</p>
+        </div>
+
+        <!-- Question 7: Contact Information -->
+        <div class="question-slide" data-step="7">
+          <span class="question-number">Question 07</span>
+          <h2 class="question-title">How may we reach you?</h2>
+          <p class="question-subtitle">Your personal concierge will be in touch within 24 hours.</p>
+          
+          <div class="text-input-row">
+            <div class="text-input-group">
+              <input type="text" class="text-input" id="firstName" placeholder="First name">
+            </div>
+            <div class="text-input-group">
+              <input type="text" class="text-input" id="lastName" placeholder="Last name">
+            </div>
+          </div>
+          
+          <div class="text-input-group">
+            <input type="email" class="text-input" id="email" placeholder="Email address">
+          </div>
+          
+          <div class="text-input-group">
+            <input type="tel" class="text-input" id="phone" placeholder="Phone number (optional)">
+          </div>
+          
+          <p class="keyboard-hint">Press <kbd>Enter</kbd> to submit</p>
+        </div>
+
+        <!-- Confirmation Screen -->
+        <div class="question-slide" data-step="8">
+          <div class="confirmation-content">
+            <div class="confirmation-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <h2 class="confirmation-title">Exquisite Choice</h2>
+            <p class="confirmation-message">
+              Your preferences have been received. A Rujo concierge will reach out within 24 hours to finalize your bespoke coffee experience.
+            </p>
+            
+            <div class="confirmation-details">
+              <h4>Your Selections</h4>
+              <div id="summaryContent"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="nav-footer" id="navFooter">
+      <button class="btn btn-back" id="btnBack" onclick="prevQuestion()" style="visibility: hidden;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Back
+      </button>
+      <button class="btn btn-next" id="btnNext" onclick="nextQuestion()" style="display: none;">
+        Continue
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </footer>
+  </div>
+
+  <script>
+    // State
+    let currentStep = 0;
+    const totalSteps = 7;
+    const formData = {
+      coffees: [],
+      grind: '',
+      roast: '',
+      frequency: '',
+      quantity: '',
+      specialRequests: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: ''
+    };
+
+    // DOM Elements
+    const slides = document.querySelectorAll('.question-slide');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const btnBack = document.getElementById('btnBack');
+    const btnNext = document.getElementById('btnNext');
+    const navFooter = document.getElementById('navFooter');
+
+    // Initialize options click handlers
+    document.querySelectorAll('.option').forEach(option => {
+      option.addEventListener('click', () => handleOptionClick(option));
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (currentStep === 0 || currentStep === 8) return;
+      
+      const currentSlide = document.querySelector(`.question-slide[data-step="${currentStep}"]`);
+      const options = currentSlide.querySelectorAll('.option');
+      
+      // Letter keys for selection
+      const keyMap = { 'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4 };
+      const key = e.key.toLowerCase();
+      
+      if (keyMap.hasOwnProperty(key) && options[keyMap[key]]) {
+        handleOptionClick(options[keyMap[key]]);
+      }
+      
+      // Enter to continue
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (canProceed()) {
+          nextQuestion();
+        }
+      }
+      
+      // Backspace to go back
+      if (e.key === 'Backspace' && currentStep > 1 && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        prevQuestion();
+      }
+    });
+
+    function handleOptionClick(option) {
+      const grid = option.closest('.options-grid');
+      const type = grid.dataset.type;
+      const name = grid.dataset.name;
+      const value = option.dataset.value;
+
+      if (type === 'checkbox') {
+        option.classList.toggle('selected');
+        if (option.classList.contains('selected')) {
+          formData[name].push(value);
+        } else {
+          formData[name] = formData[name].filter(v => v !== value);
+        }
+      } else {
+        // Radio
+        grid.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        formData[name] = value;
+      }
+
+      updateNavigation();
+      
+      // Auto-advance for radio buttons after short delay
+      if (type === 'radio') {
+        setTimeout(() => {
+          if (canProceed()) nextQuestion();
+        }, 400);
+      }
+    }
+
+    function canProceed() {
+      if (currentStep === 0) return true;
+      if (currentStep === 1) return formData.coffees.length > 0;
+      if (currentStep === 2) return formData.grind !== '';
+      if (currentStep === 3) return formData.roast !== '';
+      if (currentStep === 4) return formData.frequency !== '';
+      if (currentStep === 5) return formData.quantity !== '';
+      if (currentStep === 6) return true; // Optional
+      if (currentStep === 7) {
+        formData.firstName = document.getElementById('firstName').value;
+        formData.lastName = document.getElementById('lastName').value;
+        formData.email = document.getElementById('email').value;
+        formData.phone = document.getElementById('phone').value;
+        return formData.firstName && formData.email;
+      }
+      return true;
+    }
+
+    function updateNavigation() {
+      // Progress
+      const progress = currentStep === 0 ? 0 : (currentStep / totalSteps) * 100;
+      progressFill.style.width = `${progress}%`;
+      progressText.textContent = currentStep === 0 ? '0 / 7' : `${currentStep} / ${totalSteps}`;
+
+      // Back button
+      btnBack.style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+
+      // Next button
+      if (currentStep === 0 || currentStep === 8) {
+        btnNext.style.display = 'none';
+      } else {
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = !canProceed();
+        
+        if (currentStep === 7) {
+          btnNext.innerHTML = 'Submit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+        } else {
+          btnNext.innerHTML = 'Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+        }
+      }
+
+      // Hide footer on welcome and confirmation
+      navFooter.style.display = (currentStep === 0 || currentStep === 8) ? 'none' : 'flex';
+    }
+
+    function goToStep(step) {
+      const currentSlide = document.querySelector('.question-slide.active');
+      const nextSlide = document.querySelector(`.question-slide[data-step="${step}"]`);
+
+      if (currentSlide) {
+        currentSlide.classList.remove('active');
+        if (step > currentStep) {
+          currentSlide.classList.add('exit-up');
+        }
+        setTimeout(() => currentSlide.classList.remove('exit-up'), 600);
+      }
+
+      setTimeout(() => {
+        nextSlide.classList.add('active');
+        
+        // Focus first input if text question
+        const firstInput = nextSlide.querySelector('input, textarea');
+        if (firstInput) {
+          setTimeout(() => firstInput.focus(), 300);
+        }
+      }, 100);
+
+      currentStep = step;
+      updateNavigation();
+    }
+
+    function nextQuestion() {
+      if (!canProceed()) return;
+      
+      // Capture text inputs before moving
+      if (currentStep === 6) {
+        formData.specialRequests = document.getElementById('specialRequests').value;
+      }
+      if (currentStep === 7) {
+        formData.firstName = document.getElementById('firstName').value;
+        formData.lastName = document.getElementById('lastName').value;
+        formData.email = document.getElementById('email').value;
+        formData.phone = document.getElementById('phone').value;
+        generateSummary();
+      }
+
+      if (currentStep < 8) {
+        goToStep(currentStep + 1);
+      }
+    }
+
+    function prevQuestion() {
+      if (currentStep > 1) {
+        goToStep(currentStep - 1);
+      }
+    }
+
+    function formatValue(key, value) {
+      const labels = {
+        'kopi-luwak': 'Kopi Luwak',
+        'wush-wush': 'Wush Wush',
+        'sudan-rume': 'Sudan Rume',
+        'gesha': 'Gesha',
+        'whole-bean': 'Whole Bean',
+        'drip': 'Drip / Pour Over',
+        'coarse': 'Coarse',
+        'fine': 'Fine / Espresso',
+        'single-serve': 'Single Serve Cups',
+        'light': 'Light Roast',
+        'medium': 'Medium Roast',
+        'medium-dark': 'Medium-Dark',
+        'dark': 'Dark Roast',
+        'weekly': 'Weekly',
+        'biweekly': 'Every Two Weeks',
+        'monthly': 'Monthly',
+        'one-time': 'One-Time Order',
+        '8oz': '8 oz (Half Pound)',
+        '16oz': '16 oz (One Pound)',
+        '32oz': '2 lbs',
+        '5lb': '5 lbs'
+      };
+      
+      if (Array.isArray(value)) {
+        return value.map(v => labels[v] || v).join(', ');
+      }
+      return labels[value] || value;
+    }
+
+    function generateSummary() {
+      const summaryContent = document.getElementById('summaryContent');
+      const items = [
+        { label: 'Selected Coffees', value: formatValue('coffees', formData.coffees) },
+        { label: 'Preparation', value: formatValue('grind', formData.grind) },
+        { label: 'Roast Level', value: formatValue('roast', formData.roast) },
+        { label: 'Delivery', value: formatValue('frequency', formData.frequency) },
+        { label: 'Quantity', value: formatValue('quantity', formData.quantity) },
+        { label: 'Contact', value: `${formData.firstName} ${formData.lastName}` },
+        { label: 'Email', value: formData.email }
+      ];
+
+      if (formData.phone) {
+        items.push({ label: 'Phone', value: formData.phone });
+      }
+
+      if (formData.specialRequests) {
+        items.push({ label: 'Notes', value: formData.specialRequests });
+      }
+
+      summaryContent.innerHTML = items.map(item => `
+        <div class="summary-item">
+          <span class="summary-label">${item.label}</span>
+          <span class="summary-value">${item.value}</span>
+        </div>
+      `).join('');
+    }
+
+    // Initialize
+    updateNavigation();
+  </script>
+</body>
+</html>
